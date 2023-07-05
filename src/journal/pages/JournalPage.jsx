@@ -6,7 +6,7 @@ import { AddOutlined } from '@mui/icons-material';
 export const JournalPage = () => {
   return (
     <>
-      <JournalLayout>
+      <JournalLayout className="animate__animated animate__fadeIn animate__faster">
         {/* <Typography>
           Nulla officia incididunt aute magna occaecat Lorem, ipsum dolor sit
           amet consectetur adipisicing elit. Dolores quibusdam soluta illo dicta
@@ -14,8 +14,8 @@ export const JournalPage = () => {
           sequi ab earum ex exercitationem. Omnis, natus atque.
         </Typography> */}
 
-        {/* <NothingSelectedView /> */}
-        <NoteView />
+        <NothingSelectedView />
+        {/* <NoteView /> */}
 
         <IconButton
           size="large"
