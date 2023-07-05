@@ -1,12 +1,70 @@
-import { Grid, TextField, Typography, Button, Link } from '@mui/material';
-import { Google } from '@mui/icons-material';
+import { useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
+import {
+  Grid,
+  TextField,
+  Typography,
+  Button,
+  Link,
+  Alert,
+} from '@mui/material';
+import { Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout.jsx';
+import { useForm } from '../../hooks/useForm.js';
+import { startCreatingUserWithEmailPassword } from '../../store/auth/thunks.js';
+
+const formData = {
+  email: '',
+  password: '',
+  displayName: '',
+};
+
+const formValidations = {
+  email: [(value) => value.includes('@'), 'El correo debe de tener una @'],
+  password: [
+    (value) => value.length >= 8,
+    'El password debe tener mas de 8 caracteres',
+  ],
+  displayName: [(value) => value.length >= 1, 'El nombre es obligatorio'],
+};
 
 export const RegisterPage = () => {
+  const dispatch = useDispatch();
+
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const { status, errorMessage } = useSelector((state) => state.auth);
+  const isCheckingAuthentication = useMemo(
+    () => status === 'checking',
+    [status]
+  );
+  const {
+    formState,
+    displayName,
+    email,
+    password,
+    onInputChange,
+    isFormValid,
+    displayNameValid,
+    emailValid,
+    passwordValid,
+  } = useForm(formData, formValidations);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+    setFormSubmitted(true);
+
+    if (!isFormValid) return;
+
+    dispatch(startCreatingUserWithEmailPassword(formState));
+  };
+
   return (
     <AuthLayout title="Crear cuenta">
-      <form action="">
+      <h1>FormValid {isFormValid ? 'Valido' : 'Incorrecto'}</h1>
+      <form onSubmit={onSubmit}>
         <Grid container>
           {/* Inputs */}
 
@@ -17,8 +75,13 @@ export const RegisterPage = () => {
             <TextField
               label="Nombre completo"
               type="text"
-              placeholder="Ezequiel Grynberg"
+              placeholder="Nombre Completo"
               fullWidth
+              name="displayName"
+              value={displayName}
+              onChange={onInputChange}
+              error={!!displayNameValid && formSubmitted}
+              helperText={displayNameValid}
             />
           </Grid>
           <Grid
@@ -30,6 +93,10 @@ export const RegisterPage = () => {
               type="email"
               placeholder="email@google.com"
               fullWidth
+              name="email"
+              onChange={onInputChange}
+              error={!!emailValid && formSubmitted}
+              helperText={emailValid}
             />
           </Grid>
           <Grid
@@ -41,6 +108,10 @@ export const RegisterPage = () => {
               type="password"
               placeholder="password"
               fullWidth
+              name="password"
+              onChange={onInputChange}
+              error={!!passwordValid && formSubmitted}
+              helperText={passwordValid}
             />
           </Grid>
 
@@ -52,8 +123,15 @@ export const RegisterPage = () => {
             <Grid
               item
               xs={12}
-              sm={6}>
+              display={!!errorMessage ? '' : 'none'}>
+              <Alert severity="error">{errorMessage}</Alert>
+            </Grid>
+            <Grid
+              item
+              xs={12}>
               <Button
+                disabled={isCheckingAuthentication}
+                type="submit"
                 variant="contained"
                 fullWidth>
                 Crear Cuenta
