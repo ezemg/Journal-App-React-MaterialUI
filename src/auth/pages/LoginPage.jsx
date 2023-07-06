@@ -19,6 +19,11 @@ import {
   startLoginWithEmailPassword,
 } from '../../store/auth/';
 
+const formData = {
+  email: '',
+  password: '',
+};
+
 export const LoginPage = () => {
   const dispatch = useDispatch();
 
@@ -28,10 +33,7 @@ export const LoginPage = () => {
 
   const isAuthenticating = useMemo(() => status === 'checking', [status]);
 
-  const { email, password, onInputChange, formState } = useForm({
-    email: '',
-    password: '',
-  });
+  const { email, password, onInputChange, formState } = useForm(formData);
 
   const onSubmit = (e) => {
     e.preventDefault();

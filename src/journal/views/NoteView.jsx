@@ -1,9 +1,32 @@
+import { useEffect, useMemo } from 'react';
 import { SaveOutlined } from '@mui/icons-material';
 import { Button, Grid, TextField, Typography } from '@mui/material';
-import React from 'react';
 import { ImageGallery } from '../components';
+import { useForm } from '../../hooks/useForm.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { setActiveNote } from '../../store/journal/journalSlice.js';
+import { startSaveNote } from '../../store/journal/index.js';
 
 export const NoteView = () => {
+  const dispatch = useDispatch();
+  const { active: note } = useSelector((state) => state.journal);
+
+  const { body, title, onInputChange, formState, date } = useForm(note);
+
+  const dateString = useMemo(() => {
+    const newDate = new Date(date);
+
+    return newDate.toUTCString();
+  }, [date]);
+
+  useEffect(() => {
+    dispatch(setActiveNote(formState));
+  }, [formState]);
+
+  const onSaveNote = () => {
+    dispatch(startSaveNote());
+  };
+
   return (
     <Grid
       className="animate__animated animate__fadeIn animate__faster"
@@ -16,11 +39,12 @@ export const NoteView = () => {
         <Typography
           fontSize={39}
           fontWeight="light">
-          29 de Junio, 2023
+          {dateString}
         </Typography>
       </Grid>
       <Grid item>
         <Button
+          onClick={onSaveNote}
           color="primary"
           sx={{ padding: 2 }}>
           <SaveOutlined sx={{ fontSize: 30, mr: 1 }} />
@@ -35,6 +59,9 @@ export const NoteView = () => {
           placeholder="Ingrese un titulo"
           label="Titulo"
           sx={{ border: 'none', mb: 1 }}
+          name="title"
+          value={title}
+          onChange={onInputChange}
         />
         <TextField
           type="text"
@@ -43,6 +70,9 @@ export const NoteView = () => {
           multiline
           placeholder="Qué sucedió en el día de hoy?"
           minRows={5}
+          name="body"
+          value={body}
+          onChange={onInputChange}
         />
       </Grid>
 
