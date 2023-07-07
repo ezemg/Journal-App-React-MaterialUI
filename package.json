@@ -16,6 +16,7 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.13.6",
     "@reduxjs/toolkit": "^1.9.5",
+    "cloudinary": "^1.37.3",
     "firebase": "^9.23.0",
     "prop-types": "^15.8.1",
     "query-string": "^7.1.3",
